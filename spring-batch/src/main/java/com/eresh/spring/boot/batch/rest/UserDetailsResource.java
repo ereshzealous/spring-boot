@@ -2,6 +2,7 @@ package com.eresh.spring.boot.batch.rest;
 
 import com.eresh.spring.boot.batch.rest.ws.WSGetUsersResponse;
 import com.eresh.spring.boot.batch.rest.ws.WSUser;
+import com.eresh.spring.boot.batch.service.MailService;
 import com.eresh.spring.boot.batch.service.UserDataService;
 import com.eresh.spring.boot.batch.service.vo.UserVO;
 import com.eresh.spring.boot.commons.rest.BaseRestApiImpl;
@@ -28,6 +29,9 @@ public class UserDetailsResource extends BaseRestApiImpl {
 
     @Autowired
     private UserDataService userDataService;
+
+    @Autowired
+    private MailService mailService;
 
     @GetMapping("/users/name/{firstname}")
     public ResponseEntity<RestResponse> getUsersByName(@PathVariable(name = "firstname") String firstName, @RequestParam(name = "filter", required = true) String filter) throws RestApiException {
@@ -57,6 +61,14 @@ public class UserDetailsResource extends BaseRestApiImpl {
     public ResponseEntity<RestResponse> test() throws RestApiException {
         return inboundServiceCall(new RestRequest(), service -> {
             userDataService.manuplate();
+            return new ResponseEntity<RestResponse>(new RestResponse(), HttpStatus.OK);
+        });
+    }
+
+    @GetMapping("/email")
+    public ResponseEntity<RestResponse> sendMail() throws RestApiException {
+        return inboundServiceCall(new RestRequest(), service -> {
+            mailService.sendEmail();
             return new ResponseEntity<RestResponse>(new RestResponse(), HttpStatus.OK);
         });
     }
